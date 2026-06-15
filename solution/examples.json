@@ -1,12 +1,12 @@
 {
   "examples": [
     {
-      "question": "Mua 2 sản phẩm A dùng mã SALE10 ship Hà Nội - tổng cộng bao nhiêu?",
-      "ideal_answer": "Sản phẩm A còn hàng (đơn giá 100.000 VND).\nSubtotal: 100.000 * 2 = 200.000 VND.\nCoupon SALE10 giảm 10%: 200.000 * 10 // 100 = 20.000 VND.\nDiscounted: 200.000 - 20.000 = 180.000 VND.\nPhí vận chuyển Hà Nội: 30.000 VND.\nTổng cộng: 180.000 + 30.000 = 210.000 VND.\n\nTong cong: 210000 VND"
+      "question": "Mua 2 ipad dung ma SALE10 ship Ha Noi - tong cong bao nhieu?",
+      "ideal_answer": "Sản phẩm ipad còn hàng (đơn giá 100.000 VND).\nSubtotal: 100.000 * 2 = 200.000 VND.\nCoupon SALE10 giảm 10%: 200.000 * 10 // 100 = 20.000 VND.\nDiscounted: 200.000 - 20.000 = 180.000 VND.\nPhí vận chuyển Hà Nội: 30.000 VND.\nTổng cộng: 180.000 + 30.000 = 210.000 VND.\n\nTong cong: 210000 VND"
     },
     {
-      "question": "Mua 1 AirPods giao Ha Noi het bao nhieu VND?",
-      "ideal_answer": "Sản phẩm AirPods hiện đã hết hàng trong hệ thống. Rất tiếc shop không thể thực hiện đơn hàng này."
+      "question": "Mua 1 airpods giao Ha Noi het bao nhieu VND?",
+      "ideal_answer": "Sản phẩm airpods hiện đã hết hàng trong hệ thống. Rất tiếc shop không thể thực hiện đơn hàng này."
     }
   ]
 }
