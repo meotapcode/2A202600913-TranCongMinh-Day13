@@ -28,8 +28,21 @@ def redact(text, mask: str = "[REDACTED:{}]"):
         return text, 0
     n = 0
     for label, pat in _PATTERNS.items():
-        text, k = pat.subn(mask.format(label), text)
-        n += k
+        if label == "IP":
+            matches = list(pat.finditer(text))
+            for m in reversed(matches):
+                val = m.group(0)
+                try:
+                    octets = [int(o) for o in val.split(".")]
+                    if all(0 <= o <= 255 for o in octets):
+                        start, end = m.span()
+                        text = text[:start] + mask.format(label) + text[end:]
+                        n += 1
+                except ValueError:
+                    pass
+        else:
+            text, k = pat.subn(mask.format(label), text)
+            n += k
     return text, n
 
 

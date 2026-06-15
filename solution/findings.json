@@ -1,12 +1,116 @@
 {
-  "team": "TODO-team-name",
+  "team": "minhtc",
   "schema_version": 1,
   "findings": [
     {
       "fault_class": "latency_spike",
-      "evidence": {"metric": "latency_p95_ms", "observed": "TODO from your telemetry", "trace_ids": []},
-      "root_cause": "TODO: what config knob or behavior causes it?",
-      "suggested_fix": "TODO: config change and/or wrapper mitigation"
+      "evidence": {
+        "metric": "latency_p95_ms",
+        "observed": "Observed high p95 latency spikes (>10s) on multi-turn queries and repeated requests.",
+        "trace_ids": ["prac-011", "prac-014"]
+      },
+      "root_cause": "Cache was disabled, and high temperature (1.6) led to longer generation paths or repeated steps.",
+      "suggested_fix": "Enable response cache in config.json and wrapper.py, and lower temperature to 0.2."
+    },
+    {
+      "fault_class": "error_spike",
+      "evidence": {
+        "metric": "tool_error_rate",
+        "observed": "Tool error rate parameter of 0.18 caused intermittent failures in tool execution steps.",
+        "trace_ids": []
+      },
+      "root_cause": "Opaque agent tool failures without automatic retry configuration.",
+      "suggested_fix": "Set retry config to enabled: true with max_attempts: 3 in config.json."
+    },
+    {
+      "fault_class": "cost_blowup",
+      "evidence": {
+        "metric": "tokens_per_request",
+        "observed": "High token usage (~48k prompt tokens per request) when context size and verbosity were large.",
+        "trace_ids": ["pub-012"]
+      },
+      "root_cause": "Large context_size, premium price tier, and verbose system prompts enabled by default.",
+      "suggested_fix": "Reduce context_size to 2, set model_price_tier to economy, and disable verbose_system in config.json."
+    },
+    {
+      "fault_class": "quality_drift",
+      "evidence": {
+        "metric": "drift_rate",
+        "observed": "Incorrect coupons and calculations occurred in later turns of user sessions.",
+        "trace_ids": []
+      },
+      "root_cause": "Historical messages accumulated in context causing LLM output quality to drift.",
+      "suggested_fix": "Set context_reset_every to 4 in config.json to reset history periodically."
+    },
+    {
+      "fault_class": "infinite_loop",
+      "evidence": {
+        "metric": "max_steps_reached",
+        "observed": "Agent got stuck calling tools repeatedly due to missing guardrails.",
+        "trace_ids": []
+      },
+      "root_cause": "loop_guard set to false in config.json.",
+      "suggested_fix": "Set loop_guard to true and max_steps to 12 in config.json."
+    },
+    {
+      "fault_class": "tool_failure",
+      "evidence": {
+        "metric": "tool_error_rate",
+        "observed": "Intermittent failures when querying cities containing Vietnamese diacritics.",
+        "trace_ids": []
+      },
+      "root_cause": "Mismatch between queried diacritics and target database names.",
+      "suggested_fix": "Enable normalize_unicode in config.json."
+    },
+    {
+      "fault_class": "pii_leak",
+      "evidence": {
+        "metric": "pii_leaks_count",
+        "observed": "Customer phone numbers and emails echoed back in the agent's response text.",
+        "trace_ids": ["prac-010", "prac-013"]
+      },
+      "root_cause": "redact_pii set to false and lack of PII constraints in system prompt.",
+      "suggested_fix": "Set redact_pii to true, add instruction to prompt.txt, and apply regex redaction in wrapper.py."
+    },
+    {
+      "fault_class": "fabrication",
+      "evidence": {
+        "metric": "accuracy",
+        "observed": "Agent fabricated totals for out-of-stock items instead of refusing them.",
+        "trace_ids": ["prac-004"]
+      },
+      "root_cause": "Lack of grounding constraints and instructions to refuse when out-of-stock.",
+      "suggested_fix": "Instruct prompt.txt to refuse and output no total if an item is out of stock."
+    },
+    {
+      "fault_class": "arithmetic_error",
+      "evidence": {
+        "metric": "accuracy",
+        "observed": "Incorrect totals calculated by LLM (e.g., adding shipping fee incorrectly or wrong unit discount).",
+        "trace_ids": ["one"]
+      },
+      "root_cause": "High temperature (1.6) and lack of precise floor division instructions in system prompt.",
+      "suggested_fix": "Lower temperature to 0.2, enable self-consistency, and add strict floor math rules to prompt.txt."
+    },
+    {
+      "fault_class": "tool_overuse",
+      "evidence": {
+        "metric": "tools_used_count",
+        "observed": "Agent calling same tools repeatedly, raising token cost.",
+        "trace_ids": []
+      },
+      "root_cause": "Lack of tool budget and instructions to limit tool calls.",
+      "suggested_fix": "Set tool_budget to 5 and instruct model to call each tool at most once."
+    },
+    {
+      "fault_class": "prompt_injection",
+      "evidence": {
+        "metric": "injection_vulnerability",
+        "observed": "Agent obeying price overrides or custom commands in order notes.",
+        "trace_ids": []
+      },
+      "root_cause": "Treating user-supplied order notes as active instructions rather than passive data.",
+      "suggested_fix": "Sanitize order notes in wrapper.py and instruct system prompt to treat them as data only."
     }
   ]
 }
